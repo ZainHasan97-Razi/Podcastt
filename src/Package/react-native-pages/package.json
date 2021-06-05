@@ -1,0 +1,80 @@
+{
+  "_args": [
+    [
+      "react-native-pages@0.9.0",
+      "C:\\Users\\IT\\Documents\\GitHub\\SocialWaves_React_Native"
+    ]
+  ],
+  "_from": "react-native-pages@0.9.0",
+  "_id": "react-native-pages@0.9.0",
+  "_inBundle": false,
+  "_integrity": "sha512-ea1VNr3KMO4BS2Rpu8T710QbIq16g1sM+ET9IGt559AIHFhqCKB7TeKwyagCA8v5swSpQLWNpTJxp/JB+4mDFQ==",
+  "_location": "/react-native-pages",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "react-native-pages@0.9.0",
+    "name": "react-native-pages",
+    "escapedName": "react-native-pages",
+    "rawSpec": "0.9.0",
+    "saveSpec": null,
+    "fetchSpec": "0.9.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-pages/-/react-native-pages-0.9.0.tgz",
+  "_spec": "0.9.0",
+  "_where": "C:\\Users\\IT\\Documents\\GitHub\\SocialWaves_React_Native",
+  "author": {
+    "name": "Alexander Nazarov",
+    "email": "n4kz@n4kz.com"
+  },
+  "bugs": {
+    "url": "https://github.com/n4kz/react-native-pages/issues"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.9"
+  },
+  "description": "Easy to use page view component",
+  "devDependencies": {
+    "babel-eslint": "^10.0.0",
+    "eslint": "^6.5.0",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-native": "^3.7.0"
+  },
+  "files": [
+    "index.js",
+    "src/*",
+    "license.txt",
+    "readme.md"
+  ],
+  "homepage": "https://github.com/n4kz/react-native-pages#readme",
+  "keywords": [
+    "react",
+    "react-component",
+    "react-native",
+    "ios",
+    "android",
+    "pageview",
+    "viewpager",
+    "pager",
+    "swiper"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "name": "react-native-pages",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/n4kz/react-native-pages.git"
+  },
+  "scripts": {
+    "lint": "eslint index.js src example/app.js"
+  },
+  "version": "0.9.0"
+}
