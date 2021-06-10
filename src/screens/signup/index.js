@@ -1,25 +1,76 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    View,
-    Text,
-    ImageBackground,
-    StyleSheet,
-    ScrollView,
-    Image,
-    TextInput,
-    TouchableOpacity,
+    View, Text, ImageBackground, StyleSheet, ActivityIndicator,
+    ScrollView, Image, TextInput, TouchableOpacity,
 } from 'react-native';
-import {
-    theme,
-    FontColor,
-    BottonHeight,
-    InputHeight,
-} from '../../constants/Theme';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-// import DatePicker from 'react-native-datepicker';
+import { theme, FontColor, BottonHeight, InputHeight } from '../../constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import axios from 'axios'
+import AsyncStorage from '@react-native-community/async-storage';
+import { baseURL } from '../../config/BaseURL';
+
 const Signup = ({ navigation }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(()=> {
+        (async () => {
+            let user = await AsyncStorage.getItem('uid')
+            console.log('CHecking tokenn', user)
+            if(user !== undefined && user !== null) {
+                navigation.navigate('AppNavigator') 
+            }
+        })() 
+    },[])
+
+    const SignupHandler = async (event) => {
+        event.preventDefault();
+        if(name !== '' || email !== '' || password !== '') {
+            setLoading(true)
+            let formdata = new FormData();
+            formdata.append('email', email);
+            formdata.append('password', password);
+            formdata.append('name', name);
+
+            try {
+                axios.post(`${baseURL}/auth/signup`, formdata, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'cache-control': 'no-cache',
+                    },
+                })
+                .then(res => {
+                    alert('Creatin user is success')
+                    navigation.navigate('Login')
+                    setLoading(false);
+                    // return res.json();
+                })
+            } catch (err) {
+                if (err.status === 422) {
+                    setError('Email may already exist!')
+                    alert(error)
+                    // console.log('Error msg 422',res.status.message)
+                }
+                if (err.status !== 200 && res.status !== 201) {
+                    setError('Creating a user failed!')
+                    alert(error)
+                    // console.log('Error msg 200 or 201',res.data.message)
+                }
+                setLoading(false)
+            }
+        }
+        else {
+            setError("Fields shoundn't be empty");
+            alert(error)
+            setLoading(false)
+        }
+        
+    }
+
     return (
         <View style={style.container}>
             <ImageBackground
@@ -46,7 +97,8 @@ const Signup = ({ navigation }) => {
                                 <Text style={style.newPassText}>Full Name</Text>
                                 <View style={style.fullNameTextInputView}>
                                     <TextInput
-                                        // placeholder={"Matthew Matthews"}
+                                        value={name}
+                                        onChangeText={(text)=> setName(text)}
                                         placeholder={'Enter Full Name'}
                                         style={style.fullNameTextInput}
                                         placeholderTextColor={FontColor.white}
@@ -55,7 +107,8 @@ const Signup = ({ navigation }) => {
                                 <Text style={style.newPassText}>Email</Text>
                                 <View style={style.fullNameTextInputView}>
                                     <TextInput
-                                        // placeholder={"matthew.matthews@mail.com"}
+                                        value={email}
+                                        onChangeText={(text)=> setEmail(text)}
                                         placeholder={'Enter Email'}
                                         style={style.fullNameTextInput}
                                         placeholderTextColor={FontColor.white}
@@ -69,18 +122,17 @@ const Signup = ({ navigation }) => {
                                             width: '83%',
                                         }}>
                                         <TextInput
+                                            value={password}
+                                            onChangeText={(text)=> setPassword(text)}
                                             style={style.fullNameTextInput}
                                             placeholder="Enter Password"
-                                            // placeholder="*****************"
                                             placeholderTextColor={FontColor.white}
                                             secureTextEntry={true}
                                         />
                                     </View>
                                 </View>
                                 <TouchableOpacity
-                                    onPress={() =>
-                                        navigation.navigate('AppNavigator')
-                                    }
+                                    onPress={(e) => SignupHandler(e)}
                                     style={{ marginTop: 24 }}>
                                     <LinearGradient
                                         colors={[
@@ -92,9 +144,13 @@ const Signup = ({ navigation }) => {
                                         useAngle={true}
                                         angle={160}
                                         style={style.SigninLinearView}>
-                                        <Text style={{ color: FontColor.white, fontSize: 15 }}>
-                                            Sign up
-                                        </Text>
+                                        {isLoading ? 
+                                            <ActivityIndicator color="#fff"/>
+                                            :
+                                            <Text style={{ color: FontColor.white, fontSize: 15 }}>
+                                                Sign up
+                                            </Text>
+                                        }
                                     </LinearGradient>
                                 </TouchableOpacity>
                                 <View style={style.bottomTextView}>

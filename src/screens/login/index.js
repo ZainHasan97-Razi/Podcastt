@@ -1,13 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View, TouchableOpacity, StyleSheet, ScrollView, Text,
-    TextInput, Image, ImageBackground,
+    TextInput, Image, ImageBackground, ActivityIndicator
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { theme, FontColor } from '../../constants/Theme';
 
+import axios from 'axios'
+import { baseURL } from '../../config/BaseURL'
+import AsyncStorage from '@react-native-community/async-storage';
+
 const Login = ({ navigation }) => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(()=> {
+        (async () => {
+            let user = await AsyncStorage.getItem('uid')
+            console.log('CHecking tokenn', user)
+            if(user !== undefined && user !== null) {
+                navigation.navigate('AppNavigator') 
+            }
+        })() 
+    },[])
+
+    const LoginHandler = (event) => {
+        event.preventDefault();
+        if(email !== '' || password !== '') {
+            setLoading(true)
+            let formdata = new FormData();
+            formdata.append('email', email);
+            formdata.append('password', password);
+            try {
+                axios.post(`${baseURL}/auth/login`, formdata, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(res => {
+                    const {token, userId} = res.data;
+                    console.log('New res dataaaaaaa',token, userId)
+                    AsyncStorage.setItem('uid', JSON.stringify(userId))
+                    AsyncStorage.setItem('token', JSON.stringify(token));
+
+                    navigation.navigate('AppNavigator')
+                    console.log(res)
+                  
+                    alert('Logging in user is success')
+                    // return res.json();
+                    setLoading(false);
+                })
+               
+            } catch (err) {
+                console.log(err)
+                if (err.status === 402) {
+                    setError('Email may already exist!')
+                    alert(error)
+                }
+                alert(err)
+                setLoading(false)
+            }
+        }
+        else {
+            setError("Fields shoundn't be empty");
+            alert(error)
+            setLoading(false)
+        }
+    }
+
     return <View style={styles.container}>
         <ImageBackground
             source={require('../../assets/bakcgroundimage2.png')}
@@ -31,8 +94,8 @@ const Login = ({ navigation }) => {
                             <View style={styles.emailTextView}>
                                 <TextInput
                                     style={styles.emailText}
-                                    // placeholder="matthew.matthews@mail.com"
-                                    placeholder="user@gmail.com"
+                                    value={email}
+                                    onChangeText={(text)=> setEmail(text)}                                    placeholder="user@gmail.com"
                                     placeholderTextColor={FontColor.white}
                                 />
                             </View>
@@ -51,6 +114,8 @@ const Login = ({ navigation }) => {
                                             fontSize: 15,
                                             color: FontColor.white,
                                         }}
+                                        value={password}
+                                        onChangeText={(text)=> setPassword(text)}
                                         placeholderTextColor={FontColor.white}
                                         secureTextEntry={true}
                                     />
@@ -64,7 +129,9 @@ const Login = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity
-                            onPress={() => navigation.navigate('AppNavigator')}>
+                            onPress={(e)=> LoginHandler(e) }
+                            // onPress={() => navigation.navigate('AppNavigator')}
+                            >
                             <LinearGradient
                                 colors={[
                                     theme.purpleLightLinearGradient,
@@ -75,9 +142,13 @@ const Login = ({ navigation }) => {
                                 useAngle={true}
                                 angle={160}
                                 style={styles.SigninLinearView}>
-                                <Text style={{ color: FontColor.white, fontSize: 15 }}>
-                                    Sign in
-                                </Text>
+                                {isLoading ? 
+                                    <ActivityIndicator color='#fff' /> :
+                                    <Text style={{ color: FontColor.white, fontSize: 15 }}>
+                                        Sign in
+                                    </Text>
+                                }
+                                
                             </LinearGradient>
                         </TouchableOpacity>
                         <View style={styles.bottomTextView}>

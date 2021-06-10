@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,27 +6,37 @@ import {
   StyleSheet,
   ImageBackground,
   ScrollView,
-  TouchableOpacity,
-  Dimensions,
-  TextInput
 } from 'react-native';
 import {theme, FontColor, Fonts} from '../../constants/Theme';
-import {LinearGradient} from 'expo-linear-gradient';
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import PostCard from '../../components/PostCard'
+import axios from 'axios';
+import {baseURL} from '../../config/BaseURL'
 
-const Venue = ({navigation}) => {
-    
-    const [comment, setComment] = useState(false)
-    const [like, setLike] = useState(false)
-    const [items, setItems] = useState(['Home', 'People', 'Pics', 'Music', 'Events'])
-
+const NewsFeed = ({navigation}) => {
+  const [comment, setComment] = useState(false)
+  const [like, setLike] = useState(false)
+  const [getPodcastList, setPodcastList] = useState([]);
 
   const handlePressComment = () => {
     setComment(!comment)
   };
   const handlePressLike = () => {
     setLike(!like)
+  };
+
+  useEffect(() => {
+    GetPodcastList();
+  }, []);
+
+  const GetPodcastList = async (page) => {
+    try {
+      const response = await axios.get(`${baseURL}/podcast/get-podcast`)
+      console.log(response, 'This is get api respnse');
+      setPodcastList([...response.data.paginateResult]);
+    } catch(err){
+      console.log('Api failed get-podcasts', err);
+    }
   };
 
     return (
@@ -44,8 +54,13 @@ const Venue = ({navigation}) => {
 
               <Text style={styles.postText}>Posts</Text>
 
+              {getPodcastList.map((v,i)=> {
+                return <PostCard key={i}/>
+              })}
+
               {/* ====== Post card ====== */}
-              <View style={{marginBottom: 5}}>
+
+              {/* <View style={{marginBottom: 5}}>
                 <View style={styles.view1postCard}>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Image
@@ -53,12 +68,10 @@ const Venue = ({navigation}) => {
                       style={styles.imgAvatar}
                     />
                     <View style={{marginLeft: 12}}>
-                      <Text
-                        style={styles.txtName}>
+                      <Text style={styles.txtName}>
                         User user123
                       </Text>
-                      <Text
-                        style={styles.txtPremiered}>
+                      <Text style={styles.txtPremiered}>
                         Premiered Sep 5, 2019
                       </Text>
                     </View>
@@ -81,10 +94,10 @@ const Venue = ({navigation}) => {
                   <Image
                     source={require('../../assets/MaskGroup3.png')}
                     style={styles.cardImgStyle}
-                  />
+                  /> */}
 
                   {/* yaha sa Linear Gradient wala masla start ha */}
-                  <View style={styles.view2postCard}>
+                  {/* <View style={styles.view2postCard}>
                     <LinearGradient
                       colors={['#637DCF', '#3C4C7E']}
                       style={styles.linearGradientStyle}>
@@ -112,18 +125,16 @@ const Venue = ({navigation}) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}>
-                          {/* <TouchableOpacity> */}
                           <Image
                             source={require('../../assets/icons/comment.png')}
                             style={{width: 25, height: 24, alignSelf: 'center'}}
                           />
-                          {/* </TouchableOpacity> */}
                           <Text style={styles.commentStyle}>Comment</Text>
                         </TouchableOpacity>
-                      </View>
+                      </View> */}
 
                       {/* == Comment section here == */}
-                      {comment ? (
+                      {/* {comment ? (
                         <View style={styles.viewComment1}>
                           <View
                             style={{
@@ -137,11 +148,9 @@ const Venue = ({navigation}) => {
                               />
                             </View>
                             <View style={styles.viewComment2}>
-                              {/* <ScrollView> */}
                               <Text style={styles.commentText}>
                                 Praesent eu dolor eu orci vehicula
                               </Text>
-                              {/* </ScrollView> */}
                             </View>
                           </View>
 
@@ -163,7 +172,7 @@ const Venue = ({navigation}) => {
                     </LinearGradient>
                   </View>
                 </View>
-              </View>
+              </View> */}
               {/* === Post Card Ended here === */}
             </View>
           </ScrollView>
@@ -172,7 +181,7 @@ const Venue = ({navigation}) => {
     );
   }
 // }
-export default Venue;
+export default NewsFeed;
 
 const styles = StyleSheet.create({
   container: {

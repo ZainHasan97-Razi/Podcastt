@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -11,22 +11,48 @@ import {
   TextInput
 } from 'react-native';
 import {theme, FontColor, Fonts} from '../../constants/Theme';
-import {LinearGradient} from 'expo-linear-gradient';
+
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import PostCard from '../../components/PostCard'
+import axios from 'axios';
+import {baseURL} from '../../config/BaseURL'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const MyPosts = ({navigation}) => {
     
-    const [comment, setComment] = useState(false)
-    const [like, setLike] = useState(false)
-    const [items, setItems] = useState(['Home', 'People', 'Pics', 'Music', 'Events'])
-
+  const [comment, setComment] = useState(false)
+  const [like, setLike] = useState(false)
+  const [getPodcastList, setPodcastList] = useState([]);
+  // const [userId, setUserId] = useState('')
 
   const handlePressComment = () => {
     setComment(!comment)
   };
   const handlePressLike = () => {
     setLike(!like)
+  };
+
+  useEffect(()=> {
+    (async () => {
+        let user = await AsyncStorage.getItem('uid')
+        console.log('CHecking tokenn', user)
+        // setUserId(user)
+        GetPodcastList(user);
+    })() 
+  },[])
+
+  // useEffect(() => {
+  //   GetPodcastList();
+  // }, []);
+
+  const GetPodcastList = async (userId) => {
+    try {
+      const response = await axios.get(`${baseURL}/podcast/get-mypodcast?uid=${userId}`)
+      console.log(response.data, 'This is get api respnse');
+      setPodcastList([...response.data.result]);
+    } catch(err){
+      console.log('Api failed get-podcasts', err);
+    }
   };
 
     return (
@@ -45,125 +71,9 @@ const MyPosts = ({navigation}) => {
               <Text style={styles.postText}>Posts</Text>
 
               {/* ====== Post card ====== */}
-              <View style={{marginBottom: 5}}>
-                <View style={styles.view1postCard}>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Image
-                      source={require('../../assets/images/Ellipse.png')}
-                      style={styles.imgAvatar}
-                    />
-                    <View style={{marginLeft: 12}}>
-                      <Text
-                        style={styles.txtName}>
-                        User user123
-                      </Text>
-                      <Text
-                        style={styles.txtPremiered}>
-                        Premiered Sep 5, 2019
-                      </Text>
-                    </View>
-                  </View>
-
-                  <TouchableOpacity>
-                    <Image
-                      source={require('../../assets/icons/more.png')}
-                      style={{width: 8, height: 25, marginRight: 15}}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={styles.postCardText}>
-                  Integer at faucibus urna. Nullam condimentum leo id elit
-                  sagittis auctor.
-                </Text>
-
-                <View style={{marginTop: 10}}>
-                  <Image
-                    source={require('../../assets/MaskGroup3.png')}
-                    style={styles.cardImgStyle}
-                  />
-
-                  {/* yaha sa Linear Gradient wala masla start ha */}
-                  <View style={styles.view2postCard}>
-                    <LinearGradient
-                      colors={['#637DCF', '#3C4C7E']}
-                      style={styles.linearGradientStyle}>
-                      <View style={styles.view3postCard}>
-                        <View style={styles.view4postCard}>
-                          <TouchableOpacity onPress={handlePressLike}>
-                            <Image
-                              source={require('../../assets/icons/thumbsUp.png')}
-                              style={{...styles.imgThumb,tintColor: like ? FontColor.purple: '#fff'}}/>
-                          </TouchableOpacity>
-                          <Text style={styles.likeText}>751k</Text>
-                        </View>
-                        <View style={styles.view5postCard}>
-                          <TouchableOpacity>
-                            <Image
-                              source={require('../../assets/icons/thumbsDown.png')}
-                              style={styles.imgThumb}/>
-                          </TouchableOpacity>
-                          <Text style={styles.dislikeText}>16k</Text>
-                        </View>
-                        <TouchableOpacity
-                          onPress={handlePressComment}
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}>
-                          {/* <TouchableOpacity> */}
-                          <Image
-                            source={require('../../assets/icons/comment.png')}
-                            style={{width: 25, height: 24, alignSelf: 'center'}}
-                          />
-                          {/* </TouchableOpacity> */}
-                          <Text style={styles.commentStyle}>Comment</Text>
-                        </TouchableOpacity>
-                      </View>
-
-                      {/* == Comment section here == */}
-                      {comment ? (
-                        <View style={styles.viewComment1}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                            }}>
-                            <View style={{flex: 1}}>
-                              <Image
-                                source={require('../../assets/images/Ellipse.png')}
-                                style={styles.commentedUserImg}
-                              />
-                            </View>
-                            <View style={styles.viewComment2}>
-                              {/* <ScrollView> */}
-                              <Text style={styles.commentText}>
-                                Praesent eu dolor eu orci vehicula
-                              </Text>
-                              {/* </ScrollView> */}
-                            </View>
-                          </View>
-
-                          <View style={styles.viewComment3}>
-                            <TextInput
-                              style={styles.commentTextInput}
-                              placeholder="Type a comment"
-                              placeholderTextColor="#ffffff"
-                            />
-                            <TouchableOpacity style={styles.sendButton}>
-                              <Image
-                                source={require('../../assets/icons/paperPlane.png')}
-                                style={styles.imgPaperplane}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ) : null}
-                    </LinearGradient>
-                  </View>
-                </View>
-              </View>
+              {getPodcastList.map((v,i) => {
+                return <PostCard key={i} />
+              })}
               {/* === Post Card Ended here === */}
             </View>
           </ScrollView>
