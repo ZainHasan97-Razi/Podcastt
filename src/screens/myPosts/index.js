@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ImageBackground,
   ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import { Audio } from 'expo-av';
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
@@ -16,10 +17,12 @@ import AsyncStorage from '@react-native-community/async-storage'
 
 const MyPosts = ({ navigation }) => {
   const [getPodcastList, setPodcastList] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     (async () => {
-      let user = await AsyncStorage.getItem('uid')
+      let user = await AsyncStorage.getItem('uid');
+      // userId = user;
       console.log('This is userIddddd', user)
       GetPodcastList(user);
     })()
@@ -27,12 +30,34 @@ const MyPosts = ({ navigation }) => {
 
   const GetPodcastList = async (userId) => {
     try {
+      setLoading(true)
       const response = await axios.get(`${baseURL}/podcast/get-mypodcast?uid=${userId}`)
       // console.log(response.data, 'This is get api respnse');
       setPodcastList([...response.data.result]);
     } catch (err) {
       console.log('Api failed get-podcasts', err);
+    } finally {
+      setLoading(false)
     }
+  };
+  const deletePodcast = async (id) => {
+    // console.log('Deleteeeeeeeeeeeeeeee id', id);
+    let user = await AsyncStorage.getItem('uid');
+    axios
+      .delete(`${baseURL}/podcast/delete-podcast`, {
+        data: {
+          post_id: id,
+        }
+      })
+      .then((res) => {
+        // console.log('Api called delete success', res);
+        alert('Deleted sucessfully');
+        GetPodcastList(user)
+      })
+      .catch((err) => {
+        console.log('Api failed /delete-todo', err);
+        alert("Couldn't Delete");
+      });
   };
 
   return (
@@ -51,13 +76,20 @@ const MyPosts = ({ navigation }) => {
             <Text style={styles.postText}>Posts</Text>
 
             {/* ====== Post card ====== */}
-            {getPodcastList.map((v, i) => {
-              return <PostCard
-                key={i}
-                title={v.title}
-                description={v.description}
-              />
-            })}
+            {loading ?
+              <ActivityIndicator style={{ marginTop: '50%' }} color={'#fff'} size={40} />
+              :
+              getPodcastList.map((v, i) => {
+                return <PostCard
+                  key={i}
+                  // postId={v._id}
+                  title={v.title}
+                  description={v.description}
+                  deleteIcon={true}
+                  deletePodcast={() => deletePodcast(v._id)}
+                />
+              })
+            }
             {/* === Post Card Ended here === */}
           </View>
         </ScrollView>
