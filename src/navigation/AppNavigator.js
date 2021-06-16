@@ -10,11 +10,8 @@ import UserProfile from '../screens/userProfile'
 import ChatInbox from '../screens/chatInbox'
 import ChatScreen from '../screens/chatScreen'
 import MyPosts from '../screens/myPosts'
-// import AddPost from '../screens/addPost'
-import BottomTabNavigator from '../navigation/BottomTabNavigator'
-// import GettingStarted from '../screens/dumping/gettingStarted'
-// import Signup from '../screens/signup'
-// import Welcome from '../screens/welcome'
+import BottomTabNavigator from './BottomTabNavigator'
+import AuthNavigator from './AuthNavigator'
 
 const Stack = createStackNavigator();
 
@@ -32,11 +29,7 @@ function AppNavigator() {
       <Stack.Screen name="MyPosts" component={MyPosts} />
 
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-
-      {/* <Stack.Screen name="GettingStarted" component={GettingStarted} /> */}
-
-      {/* <Stack.Screen name="Signup" component={Signup} />
-      <Stack.Screen name="Welcome" component={Welcome} /> */}
+      <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
     </Stack.Navigator>
   );
 }

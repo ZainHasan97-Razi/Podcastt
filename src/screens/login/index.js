@@ -42,6 +42,7 @@ const Login = ({ navigation }) => {
                 })
                 .then(res => {
                     const {token, userId} = res.data;
+                    console.log(res.data,'res.dataaaaaaaaaaaaaaaaaaa')
                     console.log('New res dataaaaaaa',token, userId)
                     AsyncStorage.setItem('uid', JSON.stringify(userId))
                     AsyncStorage.setItem('token', JSON.stringify(token));
