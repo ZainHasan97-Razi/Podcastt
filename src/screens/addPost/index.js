@@ -12,11 +12,13 @@ import {
 } from 'react-native';
 import { FontColor } from '../../constants/Theme';
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 import axios from 'axios'
 import { baseURL } from '../../config/BaseURL'
 import AsyncStorage from '@react-native-community/async-storage'
 import { Audio } from 'expo-av';
+import * as DocumentPicker from 'expo-document-picker';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -28,6 +30,20 @@ const AddPost = ({ navigation }) => {
   const [userId, setUserId] = useState('')
   const [recording, setRecording] = useState();
   const [audioUrl, setAudioUrl] = useState('')
+
+  const _pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({});
+    console.log(result);
+    let localUri = result.uri;
+    let fileFormat = localUri.split('.').pop();
+    if(fileFormat == 'mp3' || fileFormat == 'm4a') {
+      setAudioUrl(result.uri)
+      alert('File is selected!')
+    } else {
+      alert('Only mp3 and m4a formats are supported!')
+    }
+    console.log('fileFormattt', fileFormat)
+  }
 
   async function startRecording() {
     try {
@@ -75,28 +91,21 @@ const AddPost = ({ navigation }) => {
       let match = /\.(\w+)$/.exec(filename);
       let type = match ? `audioUrl/${match[1]}` : `audioUrl`;
 
-
       const formData = new FormData();
       formData.append('title', title)
       formData.append('description', description)
       formData.append('uid', userId)
       formData.append('audio', { uri: localUri, name: filename, type });
-      // const config = {
-      //   headers: {
-      //     'content-type': 'multipart/form-data'
-      //   }
-      // }
+
       console.log('formdataaaaaaa', formData);
       axios
         .post(`${baseURL}/podcast/add-podcast`, formData)
         .then((res) => {
-          // console.log('add-todo API responseeeeee', res.data);
-          //   setMyTodo('');
           setLoading(false);
           alert('Succesfully added');
         })
         .catch((err) => {
-          console.log('Api failed add-podcast', err); 
+          console.log('Api failed add-podcast', err);
           setLoading(false);
         });
     } else {
@@ -121,14 +130,23 @@ const AddPost = ({ navigation }) => {
           <TextInput
             onChangeText={(text) => setTitle(text)}
             value={title}
-            style={styles.inputStyle} />
+            style={styles.inputStyle} 
+          />
 
           <Text style={styles.txtTitle}>Video/Podcast url</Text>
+          <View style={{flexDirection:"row", alignItems:"center", alignSelf:"center"}}>
           <TextInput
             // onChangeText={(text) => setImgUrl(text)}
             value={audioUrl}
+            multiline={true}
             editable={false}
-            style={styles.inputStyle} />
+            style={{...styles.inputStyle, width: WIDTH*0.9-60}} 
+            />
+            <TouchableOpacity onPress={_pickDocument} style={styles.btnPickFile}>
+              <FontAwesome name="file" color="#fff" size={20} />
+              <Text style={{color:"#fff", marginTop:1,fontSize:10}}>MP3</Text>
+            </TouchableOpacity>
+          </View>
 
           <Text style={styles.txtTitle}>Description</Text>
           <TextInput
@@ -137,7 +155,7 @@ const AddPost = ({ navigation }) => {
             multiline={true}
             style={{ ...styles.inputStyle, minHeight: 100 }}
           />
-          <TouchableOpacity
+          <TouchableOpacity 
             onPress={recording ? stopRecording : startRecording}
             style={styles.btnRecord}
           >
@@ -166,6 +184,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor: Color.purple,
+  },
+  btnPickFile:{
+    width:50,
+    height:50, borderWidth:2, borderColor:"#bbb",
+    marginLeft:10, marginTop:5,
+    borderRadius:30, alignItems:"center",
+    justifyContent:"center", 
+    backgroundColor:"rgba(255,255,255,0.2)"
   },
   btnRecord: {
     height: 60, borderRadius: 30, paddingHorizontal: 40,

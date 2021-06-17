@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   ImageBackground,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
 import PostCard from '../../components/PostCard'
 import axios from 'axios';
 import { baseURL } from '../../config/BaseURL'
+import { FontColor } from '../../constants/Theme';
 
 const NewsFeed = ({ navigation }) => {
   const [getPodcastList, setPodcastList] = useState([]);
@@ -43,12 +44,22 @@ const NewsFeed = ({ navigation }) => {
           navigation={navigation}
           HeadingText='Feeds'
         />
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              colors={[FontColor.purple, '#000']}
+              tintColor={FontColor.purple}
+              refreshing={loading}
+              onRefresh={GetPodcastList}
+            />
+          }>
           <View style={{ width: '95%', alignSelf: 'center' }}>
 
             <Text style={styles.postText}>Posts</Text>
-            {loading ?
-              <ActivityIndicator style={{marginTop: '50%'}} color={'#fff'} size={40} /> :
+            {
+            // loading ?
+              // <ActivityIndicator style={{ marginTop: '50%' }} color={'#fff'} size={40} /> :
               getPodcastList.map((v, i) => {
                 return <PostCard
                   key={i}

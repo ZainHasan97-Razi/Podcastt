@@ -2,20 +2,41 @@ import React, { useState, useEffect } from 'react'
 import { View, TouchableOpacity, StyleSheet, Text, TextInput, Image } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { theme, FontColor, Fonts } from '../constants/Theme';
+import { theme, FontColor } from '../constants/Theme';
 import { Audio } from 'expo-av';
 import { baseURL } from '../config/BaseURL'
-import axios from 'axios';
 
 const PostCard = ({ title, description, audioUrl, deleteIcon,
   postId,
   deletePodcast }) => {
-  const [comment, setComment] = useState(false)
   const [like, setLike] = useState(false)
   const [sound, setSound] = useState();
+  const [comment, setComment] = useState('')
+  const [toggleComment, setToggleComment] = useState(false)
+  const [commentArr, setCommentArr] = useState([
+    {
+      id: 123,
+      text: 'Praesent eu dolor eu orci vehicula',
+      img: 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F20%2F2020%2F11%2F17%2Fmichael-b-jordan-horizontal.jpg'
+    },
+    {
+      id: 123,
+      text: 'Lorem Epsum eu dolor eu orci vehicula is a lu very eu dolor eu orci vehicula',
+      img: 'https://api.time.com/wp-content/uploads/2014/05/166259035.jpg?w=824&quality=70'
+    },
+  ])
+
+  const PostComment = () => {
+    setCommentArr([...commentArr, {
+      id: 1,
+      img: 'https://www.tubefilter.com/wp-content/uploads/2019/11/dobrik-people.jpg',
+      text: comment
+    }])
+    setComment('')
+  }
 
   const handlePressComment = () => {
-    setComment(!comment)
+    setToggleComment(!toggleComment)
   };
   const handlePressLike = () => {
     setLike(!like)
@@ -113,15 +134,7 @@ const PostCard = ({ title, description, audioUrl, deleteIcon,
                   source={require('../assets/icons/thumbsUp.png')}
                   style={{ ...styles.imgThumb, tintColor: like ? FontColor.purple : '#fff' }} />
               </TouchableOpacity>
-              <Text style={styles.likeText}>751k</Text>
-            </View>
-            <View style={styles.view5postCard}>
-              <TouchableOpacity>
-                <Image
-                  source={require('../assets/icons/thumbsDown.png')}
-                  style={styles.imgThumb} />
-              </TouchableOpacity>
-              <Text style={styles.dislikeText}>16k</Text>
+              <Text style={styles.likeText}>Like</Text>
             </View>
             <TouchableOpacity
               onPress={handlePressComment}
@@ -139,35 +152,34 @@ const PostCard = ({ title, description, audioUrl, deleteIcon,
           </View>
 
           {/* == Comment section here == */}
-          {comment ? (
+          {toggleComment ? (
             <View style={styles.viewComment1}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                }}>
-                <View style={{ flex: 1 }}>
-                  <Image
-                    source={require('../assets/images/Ellipse.png')}
-                    style={styles.commentedUserImg}
-                  />
-                </View>
-                <View style={styles.viewComment2}>
-                  {/* <ScrollView> */}
-                  <Text style={styles.commentText}>
-                    Praesent eu dolor eu orci vehicula
+              {commentArr.map((v, i) => {
+                return <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                  <View style={{ flex: 1 }}>
+                    {v.id != 1 ?
+                      <Image
+                        source={{ uri: v.img }}
+                        style={styles.commentedUserImg}
+                      /> : null
+                    }
+                  </View>
+                  <View style={v.id == 1 ? styles.myComment : styles.viewComment2}>
+                    <Text style={styles.commentText}>
+                      {v.text}
                     </Text>
-                  {/* </ScrollView> */}
+                  </View>
                 </View>
-              </View>
-
+              })}
               <View style={styles.viewComment3}>
-                <TextInput
+                <TextInput                      
+                  value={comment}
+                  onChangeText={(txt) => setComment(txt)}
                   style={styles.commentTextInput}
                   placeholder="Type a comment"
                   placeholderTextColor="#ffffff"
                 />
-                <TouchableOpacity style={styles.sendButton}>
+                <TouchableOpacity onPress={PostComment} style={styles.sendButton}>
                   <Image
                     source={require('../assets/icons/paperPlane.png')}
                     style={styles.imgPaperplane}
@@ -188,6 +200,16 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     alignSelf: 'center',
+  },
+  myComment: {
+    margin: 2,
+    flex: 9,
+    margin: 10,
+    marginLeft: 0,
+    backgroundColor: '#bbb',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 40,
+    borderBottomLeftRadius: 12
   },
   btnPlay: {
     height: 40,
@@ -325,14 +347,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   commentedUserImg: {
-    width: 44,
-    height: 44,
-    marginTop: 10,
+    width: 40,
+    height: 40,
+    marginTop: 5,
     alignSelf: 'center',
     borderRadius: 22,
   },
   viewComment2: {
-    margin: 2,
+    // margin: 2,
     flex: 4,
     margin: 10,
     marginLeft: 0,

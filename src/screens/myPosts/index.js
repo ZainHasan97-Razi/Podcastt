@@ -7,7 +7,6 @@ import {
   ScrollView,
   ActivityIndicator
 } from 'react-native';
-import { Audio } from 'expo-av';
 import GlobalHeaderNew from '../../components/GlobalHeaderNew';
 import PostCard from '../../components/PostCard'
 
@@ -77,15 +76,14 @@ const MyPosts = ({ navigation }) => {
 
             {/* ====== Post card ====== */}
             {loading ?
-              <ActivityIndicator style={{ marginTop: '50%' }} color={'#fff'} size={40} />
-              :
+              <ActivityIndicator style={{ marginTop: '50%' }} color={'#fff'} size={40} /> :
               getPodcastList.map((v, i) => {
                 return <PostCard
                   key={i}
-                  // postId={v._id}
                   title={v.title}
                   description={v.description}
                   deleteIcon={true}
+                  audioUrl={v.audioUrl}
                   deletePodcast={() => deletePodcast(v._id)}
                 />
               })
