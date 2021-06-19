@@ -84,6 +84,7 @@ const MyPosts = ({ navigation }) => {
                   description={v.description}
                   deleteIcon={true}
                   audioUrl={v.audioUrl}
+                  name={v.name}
                   deletePodcast={() => deletePodcast(v._id)}
                 />
               })

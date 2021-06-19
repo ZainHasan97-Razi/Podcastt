@@ -31,18 +31,10 @@ const Login = ({ navigation }) => {
         event.preventDefault();
         if(email !== '' || password !== '') {
             setLoading(true)
-            let formdata = new FormData();
-            formdata.append('email', email);
-            formdata.append('password', password);
             try {
-                axios.post(`${baseURL}/auth/login`, formdata, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
+                axios.post(`${baseURL}/auth/login`, {email,password})
                 .then(res => {
                     const {token, userId} = res.data;
-                    console.log(res.data,'res.dataaaaaaaaaaaaaaaaaaa')
                     console.log('New res dataaaaaaa',token, userId)
                     AsyncStorage.setItem('uid', JSON.stringify(userId))
                     AsyncStorage.setItem('token', JSON.stringify(token));
@@ -51,8 +43,8 @@ const Login = ({ navigation }) => {
                     console.log(res)
                   
                     alert('Logging in user is success')
-                    // return res.json();
                     setLoading(false);
+                    return res.json();
                 })
                
             } catch (err) {

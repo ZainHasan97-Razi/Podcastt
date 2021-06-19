@@ -27,6 +27,7 @@ const AddPost = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('')
+  const [name, setName] = useState('');
   const [userId, setUserId] = useState('')
   const [recording, setRecording] = useState();
   const [audioUrl, setAudioUrl] = useState('')
@@ -76,10 +77,22 @@ const AddPost = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       let user = await AsyncStorage.getItem('uid')
-      console.log('CHecking tokenn', user)
+      // console.log('CHecking tokenn', user)
       setUserId(user)
+			GetUserDetail(user)
     })()
   }, [])
+
+  const GetUserDetail = async (userId) => {
+		try {
+			const response = await axios.get(`${baseURL}/auth/userdata?uid=${userId}`)
+			console.log(response.data.userData, 'GetUserdetail responseeeeeee')
+			setName(response.data.userData.name)
+			// setEmail(response.data.userData.email)
+		} catch (err) {
+			console.log(err, 'Get user detail api failed')
+		}
+	}
 
   const addPost = () => {
     if (title !== '' || description !== '') {
@@ -95,6 +108,7 @@ const AddPost = ({ navigation }) => {
       formData.append('title', title)
       formData.append('description', description)
       formData.append('uid', userId)
+      formData.append('name', name)
       formData.append('audio', { uri: localUri, name: filename, type });
 
       console.log('formdataaaaaaa', formData);

@@ -57,15 +57,13 @@ const NewsFeed = ({ navigation }) => {
           <View style={{ width: '95%', alignSelf: 'center' }}>
 
             <Text style={styles.postText}>Posts</Text>
-            {
-            // loading ?
-              // <ActivityIndicator style={{ marginTop: '50%' }} color={'#fff'} size={40} /> :
-              getPodcastList.map((v, i) => {
+            {getPodcastList.map((v, i) => {
                 return <PostCard
                   key={i}
                   title={v.title}
                   description={v.description}
                   audioUrl={v.audioUrl}
+                  name={v.name}
                 />
               })
             }

@@ -31,18 +31,10 @@ const Signup = ({ navigation }) => {
         event.preventDefault();
         if(name !== '' || email !== '' || password !== '') {
             setLoading(true)
-            let formdata = new FormData();
-            formdata.append('email', email);
-            formdata.append('password', password);
-            formdata.append('name', name);
+     
 
             try {
-                axios.post(`${baseURL}/auth/signup`, formdata, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 'cache-control': 'no-cache',
-                    },
-                })
+                axios.post(`${baseURL}/auth/signup`,{email,password,name})
                 .then(res => {
                     alert('Creatin user is success')
                     navigation.navigate('Login')

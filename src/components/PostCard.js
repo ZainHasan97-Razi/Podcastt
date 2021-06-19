@@ -7,8 +7,7 @@ import { Audio } from 'expo-av';
 import { baseURL } from '../config/BaseURL'
 
 const PostCard = ({ title, description, audioUrl, deleteIcon,
-  postId,
-  deletePodcast }) => {
+  postId, name, deletePodcast }) => {
   const [like, setLike] = useState(false)
   const [sound, setSound] = useState();
   const [comment, setComment] = useState('')
@@ -72,13 +71,13 @@ const PostCard = ({ title, description, audioUrl, deleteIcon,
     <View style={styles.view1postCard}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          source={require('../assets/images/Ellipse.png')}
+          source={{uri: 'https://www.nicepng.com/png/detail/136-1366211_group-of-10-guys-login-user-icon-png.png'}}
           style={styles.imgAvatar}
         />
         <View style={{ marginLeft: 12 }}>
           <Text style={styles.txtName}>
-            User user123
-            </Text>
+            {name}
+          </Text>
           <Text style={styles.txtPremiered}>
             Premiered Sep 5, 2019
             </Text>
@@ -155,7 +154,7 @@ const PostCard = ({ title, description, audioUrl, deleteIcon,
           {toggleComment ? (
             <View style={styles.viewComment1}>
               {commentArr.map((v, i) => {
-                return <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                return <View key={i} style={{ flexDirection: 'row', justifyContent: 'center' }}>
                   <View style={{ flex: 1 }}>
                     {v.id != 1 ?
                       <Image
@@ -172,7 +171,7 @@ const PostCard = ({ title, description, audioUrl, deleteIcon,
                 </View>
               })}
               <View style={styles.viewComment3}>
-                <TextInput                      
+                <TextInput
                   value={comment}
                   onChangeText={(txt) => setComment(txt)}
                   style={styles.commentTextInput}
